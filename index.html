@@ -11,55 +11,57 @@
 <iframe id="frame" title="Barokah Telur V18.1" style="display:none;width:100%;height:100%;border:0"></iframe>
 <script>
 (async()=>{
-  const status=document.getElementById('status'),frame=document.getElementById('frame');
+  const status=document.getElementById('status'), frame=document.getElementById('frame');
   try{
     const r=await fetch('https://raw.githubusercontent.com/panglimaa09-a11y/Notabarokahtelur/main/index.html',{cache:'no-store'});
     if(!r.ok) throw new Error('HTTP '+r.status);
-    let html=await r.text();
-
-    // Patch V18.1: remove the separate Cicilan feature and place it in Pembayaran.
-    const patch = `<script>
-(function(){
-  document.querySelectorAll('.installment-title, #installments').forEach(function(el){ el.remove(); });
-  document.querySelectorAll('.installment-print-title').forEach(function(title){ var t=title.nextElementSibling; if(t)t.remove(); title.remove(); });
-  window.renderInstallments=function(){};
-
-  window.renderPayments=function(){
-    const el=document.getElementById('payments'); if(!el)return;
-    if(!payments.length)payments.push({type:'DP',description:'',amount:0,date:today()});
-    el.innerHTML='<div class="pay-head"><span>No</span><span>Jenis</span><span>Keterangan</span><span>Nominal</span><span>Tanggal</span><span>Aksi</span></div>'+payments.map(function(p,i){
-      return '<div class="pay-row"><b>'+(i+1)+'</b><select onchange="payments['+i+'].type=this.value;update()"><option value="DP" '+((p.type||'DP')==='DP'?'selected':'')+'>DP</option><option value="PEMBAYARAN" '+(p.type==='PEMBAYARAN'?'selected':'')+'>Pembayaran</option><option value="CICILAN" '+(p.type==='CICILAN'?'selected':'')+'>Cicilan</option></select><input class="desc" value="'+esc(p.description||'')+'" placeholder="Keterangan" oninput="payments['+i+'].description=this.value;update()"><input inputmode="numeric" value="'+fmt(p.amount)+'" placeholder="Nominal" oninput="payments['+i+'].amount=money(this.value);this.value=fmt(payments['+i+'].amount);update()"><input class="date" type="date" value="'+(p.date||today())+'" onchange="payments['+i+'].date=this.value;update()"><button class="icon-btn" onclick="removePayment('+i+')">🗑</button></div>';
-    }).join('');
-  };
-
-  function ensureAddPayment(){
-    const paymentsEl=document.getElementById('payments'); if(!paymentsEl||document.getElementById('preview-add-payment'))return;
-    const b=document.createElement('button'); b.id='preview-add-payment'; b.className='btn btn-light add-row'; b.textContent='＋  Tambah Pembayaran'; b.onclick=function(){addPayment()}; paymentsEl.after(b);
-  }
-
-  if(typeof window.loadNota==='function'){
-    const oldLoadNota=window.loadNota;
-    window.loadNota=function(no){
-      oldLoadNota(no);
-      if(Array.isArray(installments)&&installments.length){
-        payments=payments.concat(installments.map(function(x){return{type:'CICILAN',description:x.description||'Cicilan',amount:Number(x.amount)||0,date:x.date||today()}}));
-        installments=[]; update(true);
-      }
-    };
-  }
-
-  renderPayments(); ensureAddPayment(); if(typeof renderPreview==='function')renderPreview();
-  if(typeof window.update==='function'){
-    const oldUpdate=window.update;
-    window.update=function(rebuild){oldUpdate.apply(this,arguments);setTimeout(ensureAddPayment,0)};
-  }
-})();
-<\\/script>`;
-    html=html.replace('</body>',patch+'</body>');
+    const html=await r.text();
     frame.srcdoc=html;
-    frame.style.display='block';
-    status.style.display='none';
-  }catch(e){status.textContent='Gagal memuat V18.1: '+(e.message||e)}
+    frame.onload=()=>{
+      try{
+        const win=frame.contentWindow, doc=frame.contentDocument;
+        function removeSeparateCicilan(){
+          doc.querySelectorAll('.installment-title, #installments, .installment-note, .installment-print-title').forEach(el=>el.remove());
+          doc.querySelectorAll('[onclick*="addInstallment"], [id*="installment"] button').forEach(el=>el.remove());
+        }
+        function addCicilanType(){
+          doc.querySelectorAll('#payments select').forEach(sel=>{
+            if(!Array.from(sel.options).some(o=>o.value==='CICILAN')){
+              const o=doc.createElement('option');o.value='CICILAN';o.textContent='Cicilan';sel.appendChild(o);
+            }
+          });
+        }
+        function addPaymentButton(){
+          const el=doc.getElementById('payments');
+          if(!el || doc.getElementById('preview-add-payment')) return;
+          const b=doc.createElement('button');
+          b.id='preview-add-payment'; b.className='btn btn-light add-row';
+          b.textContent='＋  Tambah Pembayaran';
+          b.onclick=()=>{ if(typeof win.addPayment==='function') win.addPayment(); };
+          el.after(b);
+        }
+        function migrateInstallments(){
+          if(!Array.isArray(win.installments)||!win.installments.length||!Array.isArray(win.payments)) return;
+          const moved=win.installments.map(x=>({type:'CICILAN',description:x.description||'Cicilan',amount:Number(x.amount)||0,date:x.date||((typeof win.today==='function')?win.today():'')}));
+          win.payments=win.payments.concat(moved);
+          win.installments=[];
+          if(typeof win.renderPayments==='function') win.renderPayments();
+          if(typeof win.update==='function') win.update();
+        }
+        migrateInstallments();
+        removeSeparateCicilan();
+        addPaymentButton();
+        addCicilanType();
+        const obs=new MutationObserver(()=>{
+          removeSeparateCicilan();
+          addPaymentButton();
+          addCicilanType();
+        });
+        obs.observe(doc.body,{childList:true,subtree:true});
+        status.style.display='none'; frame.style.display='block';
+      }catch(e){ status.textContent='Preview gagal diterapkan: '+(e.message||e); }
+    };
+  }catch(e){ status.textContent='Gagal memuat V18.1: '+(e.message||e); }
 })();
 </script>
 </body>
