@@ -3,16 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Barokah Telur V18.1 Preview</title>
+<title>Barokah Telur V18.1 — Preview Revisi</title>
 </head>
 <body>
-<div style="font-family:system-ui;padding:24px;text-align:center">Memuat V18.1…</div>
+<div id="loading" style="font-family:system-ui;padding:24px;text-align:center">Memuat V18.1 Preview…</div>
 <script>
 (async()=>{
   try{
-    const r=await fetch('https://raw.githubusercontent.com/panglimaa09-a11y/Notabarokahtelur/main/index.html',{cache:'no-store'});
+    const r=await fetch('https://raw.githubusercontent.com/panglimaa09-a11y/Notabarokahtelur/main/index.html?preview='+Date.now(),{cache:'no-store'});
     if(!r.ok) throw new Error('HTTP '+r.status);
-    const html=await r.text();
+    let html=await r.text();
+
+    // Tambahkan jenis transaksi CICILAN ke daftar Pembayaran tanpa menghapus DP/Pembayaran.
+    html=html.replace(
+      '<option value="PEMBAYARAN" '+(p.type===\'PEMBAYARAN\'?\'selected\':\'\')+'>Pembayaran</option></select>',
+      '<option value="PEMBAYARAN" '+(p.type===\'PEMBAYARAN\'?\'selected\':\'\')+'>Pembayaran</option><option value="CICILAN" '+(p.type===\'CICILAN\'?\'selected\':\'\')+'>Cicilan</option></select>'
+    );
+
+    // Pertahankan fitur Tambah Pembayaran.
+    html=html.replace(
+      '<div id="payments"></div><div class="card-title installment-title">',
+      '<div id="payments"></div><button class="btn btn-light add-row" onclick="addPayment()">＋ &nbsp;Tambah Pembayaran</button><div class="card-title installment-title">'
+    );
+
+    // Tambahkan tombol Tambah Cicilan tanpa menghilangkan daftar cicilan.
+    html=html.replace(
+      '<div id="installments"></div><button class="btn btn-gold save-btn"',
+      '<div id="installments"></div><button class="btn btn-light add-row" onclick="addInstallment()">＋ &nbsp;Tambah Cicilan</button><button class="btn btn-gold save-btn"'
+    );
+
+    // Fungsi tambah cicilan baru.
+    html=html.replace(
+      'function removeInstallment(i){installments.splice(i,1);renderInstallments()}',
+      "function addInstallment(){installments.push({description:'',amount:0,date:today(),status:'BELUM DIBAYAR'});renderInstallments()}function removeInstallment(i){installments.splice(i,1);renderInstallments()}"
+    );
+
+    // Pastikan patch benar-benar diterapkan sebelum menjalankan aplikasi.
+    if(!html.includes('Tambah Pembayaran') || !html.includes('Tambah Cicilan') || !html.includes('value=\"CICILAN\"')){
+      throw new Error('Patch preview V18.1 tidak berhasil diterapkan');
+    }
+
     document.open();
     document.write(html);
     document.close();
