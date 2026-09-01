@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barokah Telur Nota V18 — Supabase — Sistem Nota Penjualan</title>
+<style>
+:root{--black:#080a0d;--gold:#f4b51b;--bg:#f5f6f8;--line:#e4e6ea;--text:#15181d;--muted:#707782;--green:#1f9d55;--red:#e53935}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+.topbar{height:86px;background:#080a0d;color:#fff;display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20;border-bottom:1px solid #222}
+.brand{display:flex;align-items:center;gap:12px}.brand-logo{width:68px;height:68px;object-fit:contain}.brand-title{font-weight:900;font-size:22px;color:#f6c43a}.brand-sub{font-size:12px}.top-actions{margin-left:auto;display:flex;gap:12px}
+.btn{border:0;border-radius:9px;padding:11px 16px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-dark{background:#0b0d10;color:#fff;border:1px solid #62656a}.btn-gold{background:linear-gradient(135deg,#f2ad11,#f7c52e);color:#111}.btn-light{background:#fff;border:1px solid #dfe2e7;color:#252a30}.btn-red{background:#e53935;color:#fff}
+.layout{display:grid;grid-template-columns:138px 1fr;min-height:calc(100vh - 86px)}.sidebar{background:#080a0d;color:#fff;border-right:1px solid #25282d;padding:18px 10px;display:flex;flex-direction:column;gap:8px}.side-logo{width:70px;height:70px;object-fit:contain;margin:0 auto 12px}
+.nav{display:flex;flex-direction:column;gap:8px}.nav button{background:transparent;color:#fff;border:1px solid transparent;border-radius:10px;padding:13px 6px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:7px}.nav button span{font-size:22px}.nav button.active{border-color:#9d7710;background:linear-gradient(180deg,#241e0b,#17140a);color:#f6c43a}
+.content{padding:20px 18px 0;min-width:0}.main-grid{display:grid;grid-template-columns:minmax(480px,1.02fr) minmax(420px,.98fr);gap:18px;align-items:start}.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 2px 10px #1219260a;margin-bottom:12px}
+.card-title{font-size:15px;font-weight:900;display:flex;align-items:center;gap:10px;margin-bottom:14px}.ico{color:#d79500;font-size:19px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field.full{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input{width:100%;height:38px;border:1px solid #dfe2e7;border-radius:8px;padding:0 11px;background:#fafafa}
+.table-wrap{border:1px solid #e1e4e8;border-radius:8px;overflow:hidden}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#f8f9fa;font-size:11px;text-align:left;padding:9px;border-bottom:1px solid #e2e4e8}td{padding:8px;border-bottom:1px solid #eceef1}tr:last-child td{border-bottom:0}
+.item-grid{display:grid;grid-template-columns:1.3fr .55fr .75fr .9fr 1fr 40px;gap:7px;align-items:center}.item-grid input,.item-grid select{height:32px;border:1px solid #e1e4e8;border-radius:7px;padding:0 7px;font-size:11px}.icon-btn{width:31px;height:31px;padding:0;border-radius:7px;border:1px solid #ddd;background:#fff;color:#e53935}.add-row{margin-top:10px}
+.summary{margin-top:10px;border:1px solid #e5e7eb;border-radius:8px;padding:9px;background:#fcfcfc}.sumrow{display:flex;justify-content:space-between;padding:5px 7px;font-size:12px}.sumrow.total{font-weight:900;font-size:14px}.sumrow.paid strong{color:var(--green)}.sumrow.due strong{color:var(--red)}
+.badge{display:inline-block;padding:5px 9px;border-radius:6px;font-size:10px;font-weight:900}.badge-unpaid{background:#f7d56e;color:#6e5000}.badge-paid{background:#bfeccf;color:#166534}
+.pay-row{display:grid;grid-template-columns:30px minmax(170px,1fr) 130px 115px 34px;gap:7px;align-items:center;margin-bottom:7px}.pay-row input{height:34px;border:1px solid #dfe2e7;border-radius:7px;padding:0 8px;font-size:11px}.save-btn{width:100%;margin-top:10px}.feature-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.feature{border-top:1px solid #eee;padding-top:9px}.feature b{font-size:10px;display:block}.feature span{font-size:9px;color:var(--muted)}
+.preview-card{position:sticky;top:104px}.preview-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.preview-title{font-size:14px;font-weight:900}.paper{background:#fff;border:1px dashed #8e9298;border-radius:4px;padding:22px 24px;min-height:700px}.paper-logo{display:block;width:155px;height:155px;object-fit:contain;margin:0 auto 4px}.paper-top{display:flex;justify-content:space-between;align-items:end;border-bottom:1px dashed #30343a;padding-bottom:13px}.paper h1{font-size:27px;margin:0;font-weight:900}.paper-meta{text-align:right;font-size:11px}.paper-customer{padding:14px 0 10px;font-size:11px}.paper-customer strong{display:block;font-size:13px;margin-top:3px}.paper-table th{background:#050505;color:#fff;font-size:10px;padding:7px}.paper-table td{font-size:10px;padding:7px}.paper-totals{width:100%;margin:14px 0 0 auto}.paper-totals div{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;font-size:12px;font-weight:800}.paper-totals div span{text-align:left}.paper-totals div strong{text-align:right;min-width:150px;white-space:nowrap}.paper-totals .paid strong{color:#249052}.paper-totals .due strong{color:#e53935}.paper-status{text-align:right;margin-top:5px}.paper-divider{border-top:1px dashed #444;margin:17px 0}.paper-pay-title{font-weight:900;font-size:12px;margin-bottom:8px}.paper-foot{text-align:center;margin-top:18px;border-top:1px dashed #444;padding-top:13px;font-size:11px;font-style:italic;font-weight:800}.paper-foot small{display:block;font-style:normal;font-weight:500;margin-top:4px}
+.history-card{margin-top:12px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.history-tools{display:flex;gap:8px}.history-tools input{width:280px;height:36px;border:1px solid #dfe2e7;border-radius:8px;padding:0 10px}.history-table td,.history-table th{font-size:10px}
+.footer{margin:18px -18px 0;background:#080a0d;color:#fff;padding:16px 24px;display:flex;justify-content:space-between;font-size:11px}.footer b{color:#f6c43a}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main-grid{grid-template-columns:1fr}.preview-card{position:static}}
+@media(max-width:720px){.topbar{height:auto;padding:10px 12px;flex-wrap:wrap}.brand-logo{width:52px;height:52px}.brand-title{font-size:16px}.top-actions .btn{padding:9px;font-size:11px}.content{padding:12px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.item-grid{grid-template-columns:1fr 1fr}.pay-row{grid-template-columns:24px 1fr 1fr 34px}.pay-row .date{display:none}.feature-strip{grid-template-columns:1fr 1fr}.paper{padding:14px}.paper-logo{width:115px;height:115px}.paper-totals{width:100%}.paper-totals div strong{min-width:125px}.history-tools{flex-direction:column}.history-tools input{width:100%}}
+@media print{@page{size:A4;margin:10mm}body *{visibility:hidden!important}.print-target,.print-target *{visibility:visible!important}.topbar,.sidebar,.content>.main-grid>div:first-child,.history-card,.footer,.preview-head{display:none!important}.layout{display:block;min-height:0}.content{padding:0}.main-grid{display:block}.preview-card{display:block;position:static}.print-target{display:block!important;border:0!important;box-shadow:none!important;border-radius:0!important;width:100%!important;min-height:0!important}}
+.pay-head,.pay-row{display:grid;align-items:center;gap:7px}.pay-head,.pay-row{grid-template-columns:30px 105px minmax(150px,1fr) 125px 115px 34px}.pay-head{background:#f8f9fa;padding:9px;font-size:10px;font-weight:900}.pay-row{padding:7px 0;border-top:1px solid #eceef1}.pay-row input,.pay-row select{height:34px;border:1px solid #dfe2e7;border-radius:7px;padding:0 8px;font-size:11px;width:100%;box-sizing:border-box}@media(max-width:720px){.pay-head{display:none}.pay-row{grid-template-columns:24px 1fr 1fr 34px}.pay-row .date{display:none}.pay-row select{grid-column:2}.pay-row input.desc{grid-column:3}}</style>
+<style id="owner-reference-ui-refinement">
+/* OWNER REFERENCE UI — refine existing application without replacing features */
+.topbar{height:88px;padding:0 18px}
+.brand{min-width:340px}
+.brand-logo{width:76px;height:76px;border-radius:50%;object-fit:cover}
+.brand-title{font-size:21px}
+.layout{grid-template-columns:108px 1fr}
+.sidebar{padding:14px 8px}
+.side-logo{width:64px;height:64px;margin-bottom:10px;border-radius:50%;object-fit:cover}
+.nav button{padding:12px 4px;font-size:10px}
+.content{padding:18px 16px 0}
+.main-grid{grid-template-columns:minmax(470px,1fr) minmax(500px,1fr);gap:16px}
+.card{border-radius:9px;padding:14px;margin-bottom:10px}
+.card-title{margin-bottom:11px;font-size:14px}
+.field input,.field select{height:36px}
+.item-grid{font-size:11px}
+.summary{padding:8px}
+.pay-row{grid-template-columns:28px minmax(180px,1fr) 120px 110px 32px}
+.preview-card{top:104px}
+.paper{padding:18px 22px;min-height:0}
+.paper-logo{width:160px;height:160px;border-radius:50%;object-fit:cover}
+.paper h1{font-size:28px}
+.history-card{margin-top:10px}
+.history-table td,.history-table th{font-size:10px;padding:8px}
+.footer{margin-top:14px}
+@media(max-width:1050px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main-grid{grid-template-columns:1fr}
+  .preview-card{position:static}
+}
+@media(max-width:720px){
+  .topbar{height:auto;padding:9px 10px}
+  .brand{min-width:0}
+  .brand-logo{width:54px;height:54px}
+  .brand-title{font-size:15px}
+  .brand-sub{font-size:10px}
+  .content{padding:10px}
+  .paper{padding:13px}
+  .paper-logo{width:112px;height:112px}
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="brand"><img class="brand-logo" src="assets/logo-barokah-telur.png"><div><div class="brand-title">BAROKAH TELUR</div><div class="brand-sub">Sistem Nota Penjualan</div></div></div><div class="top-actions"><button class="btn btn-dark" onclick="document.getElementById('history').scrollIntoView()">▣ &nbsp;Riwayat Nota</button><button class="btn btn-gold" onclick="newNota()">⊕ &nbsp;Buat Nota Baru</button></div></header>
+<div class="layout"><aside class="sidebar"><img class="side-logo" src="assets/logo-barokah-telur.png"><nav class="nav"><button onclick="alert('Dashboard pada versi nota ini digunakan sebagai navigasi.')"><span>⌂</span>Dashboard</button><button class="active"><span>▣</span>Buat Nota</button><button onclick="document.getElementById('history').scrollIntoView()"><span>▤</span>Riwayat Nota</button></nav><div style="margin-top:auto"><button class="nav" style="width:100%" onclick="alert('Pengaturan siap dikembangkan.')"><span>⚙</span>Pengaturan</button></div></aside>
+<main class="content"><div class="main-grid"><div>
+<section class="card"><div class="card-title"><span class="ico">♧</span> DATA PENJUALAN</div><div class="fields"><div class="field"><label>No. Nota</label><input id="noNota" readonly style="background:#f0f4f8;cursor:default;color:#555;border-color:#ddd;font-weight:700;"></div><div class="field"><label>Tanggal</label><input id="tanggal" type="date"></div><div class="field full"><label>Pelanggan</label><input id="pelanggan" placeholder="Nama pelanggan"></div></div></section>
+<section class="card"><div class="card-title"><span class="ico">🛒</span> DAFTAR BARANG</div><div id="items"></div><button class="btn btn-light add-row" onclick="addItem()">＋ &nbsp;Tambah Barang</button><div class="summary"><div class="sumrow total"><span>Total</span><strong id="sumTotal">Rp 0</strong></div><div class="sumrow paid"><span>Total Dibayar</span><strong id="sumPaid">Rp 0</strong></div><div class="sumrow due"><span>Sisa Tagihan</span><strong id="sumDue">Rp 0</strong></div><div class="sumrow"><span>Status</span><span id="sumStatus" class="badge badge-unpaid">BELUM LUNAS</span></div></div></section>
+<section class="card"><div class="card-title"><span class="ico">💳</span> PEMBAYARAN</div><div id="payments"></div><button class="btn btn-gold save-btn" onclick="saveNota()">▣ &nbsp;Simpan Nota ke Riwayat</button><div class="feature-strip"><div class="feature"><b>♧ Cicilan Bertahap</b><span>Bisa tambah pembayaran berkali-kali</span></div><div class="feature"><b>▣ Print Nota</b><span>Cetak nota kapan saja</span></div><div class="feature"><b>▤ Riwayat Nota</b><span>Lihat & print ulang nota lama</span></div><div class="feature"><b>⌂ Aman & Rapi</b><span>Data tersimpan di perangkat</span></div></div></section>
+</div>
+<div class="preview-card"><div class="preview-head"><div class="preview-title">PREVIEW NOTA</div><button class="btn btn-dark" onclick="printNota()">▣ &nbsp;Print Nota</button></div>
+<section class="paper print-target" id="paper"><img class="paper-logo" src="assets/logo-barokah-telur.png"><div class="paper-top"><h1>NOTA</h1><div class="paper-meta"><b id="pNo"></b><br><span id="pDate"></span></div></div><div class="paper-customer">Pelanggan<strong id="pCustomer">-</strong></div><table class="paper-table"><thead><tr><th>No</th><th>Barang</th><th>Qty</th><th>Satuan</th><th>Harga</th><th>Total</th></tr></thead><tbody id="pItems"></tbody></table><div class="paper-totals"><div><span>TOTAL</span><strong id="pTotal"></strong></div><div class="paid"><span>TOTAL DIBAYAR</span><strong id="pPaid"></strong></div><div class="due"><span>SISA TAGIHAN</span><strong id="pDue"></strong></div></div><div class="paper-status"><span id="pStatus" class="badge badge-unpaid">BELUM LUNAS</span></div><div class="paper-divider"></div><div class="paper-pay-title">RINCIAN PEMBAYARAN</div><table class="paper-table"><thead><tr><th>No</th><th>Jenis</th><th>Keterangan</th><th>Nominal</th><th>Tanggal</th></tr></thead><tbody id="pPayments"></tbody></table><div class="paper-divider"></div><div class="paper-foot">— &nbsp; Terima kasih atas kepercayaan Anda &nbsp; —<small>Barang yang sudah dibeli tidak dapat dikembalikan.</small></div></section></div></div>
+<section class="card history-card" id="history"><div class="history-head"><div class="card-title" style="margin:0"><span class="ico">▤</span> RIWAYAT NOTA</div><div class="history-tools"><input id="search" placeholder="Cari pelanggan / no. nota..." oninput="renderHistory()"><button class="btn btn-red" onclick="clearHistory()">♜ &nbsp;Hapus Semua</button></div></div><div class="table-wrap" style="margin-top:12px"><table class="history-table"><thead><tr><th>No. Nota</th><th>Tanggal</th><th>Pelanggan</th><th>Total</th><th>Total Dibayar</th><th>Sisa</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="historyRows"></tbody></table></div></section>
+<div id="cloudStatus" style="position:fixed;right:14px;bottom:14px;z-index:50;background:#fff;border:1px solid #ddd;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;box-shadow:0 4px 18px #0001">☁️ Sinkronisasi...</div><footer class="footer"><b>BAROKAH TELUR</b><span>Sistem Nota Penjualan</span><span>© 2026 Barokah Telur. All rights reserved.</span></footer></main></div>
+<script>
+const SUPABASE_URL='https://skaoxvzbuzxkxmrwvilf.supabase.co';
+const SUPABASE_KEY='sb_publishable_RDyh3VvL5z67bvGkKQ9SCg_bTYN1V7b';
+let cloudReady=false, cloudSyncing=false;
+async function sbFetch(path,options={}){
+ const headers=Object.assign({'apikey':SUPABASE_KEY,'Content-Type':'application/json'},options.headers||{});
+ delete headers.Authorization;
+ const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,Object.assign({},options,{headers}));
+ const text=await r.text();
+ if(!r.ok)throw new Error('Supabase '+r.status+': '+text);
+ return r.status===204?null:(text?JSON.parse(text):null);
+}
+async function testSupabase(){
+ const cs=document.getElementById('cloudStatus');
+ try{
+  await sbFetch('barokah_notes?select=note_no&limit=1');
+  cloudReady=true;
+  if(cs){cs.textContent='☁️ Supabase Terhubung';cs.style.color='#1f9d55'}
+  return true;
+ }catch(e){
+  cloudReady=false;
+  if(cs){cs.textContent='⚠️ Supabase gagal: '+e.message;cs.style.color='#e53935'}
+  console.error('Supabase connection:',e);
+  return false;
+ }
+}
+function notePayload(){const no=String(noNota.value||'').trim(),date=tanggal.value,customer=String(pelanggan.value||'').trim(),grandTotal=total(),grandPaid=paid();return {no,date,customer,items:JSON.parse(JSON.stringify(items)),payments:JSON.parse(JSON.stringify(payments.filter(p=>p.amount||p.description))),installments:[],total:grandTotal,paid:grandPaid,due:Math.max(0,grandTotal-grandPaid)}}
+async function cloudList(){return await sbFetch('barokah_notes?select=note_no,data,updated_at&order=updated_at.desc')}
+async function cloudUpsert(n){await sbFetch('barokah_notes?on_conflict=note_no',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({note_no:n.no,data:n,updated_at:new Date().toISOString()})})}
+async function cloudDelete(no){await sbFetch('barokah_notes?note_no=eq.'+encodeURIComponent(no),{method:'DELETE',headers:{'Prefer':'return=minimal'}})}
+async function cloudClear(){await sbFetch('barokah_notes?note_no=not.is.null',{method:'DELETE',headers:{'Prefer':'return=minimal'}})}
+async function syncFromCloud(){
+ if(cloudSyncing)return; cloudSyncing=true;
+ try{
+  const remote=await cloudList();
+  const local=getHistory();
+  if(remote.length===0 && local.length){for(const n of local)await cloudUpsert(n);}
+  const fresh=remote.length?remote.map(x=>x.data).filter(Boolean):local;
+  localStorage.setItem(KEY,JSON.stringify(fresh));
+  cloudReady=true;renderHistory();const cs=document.getElementById('cloudStatus');if(cs){cs.textContent='☁️ Terhubung';cs.style.color='#1f9d55'}
+ }catch(e){console.warn('Supabase sync:',e);cloudReady=false;const cs=document.getElementById('cloudStatus');if(cs){cs.textContent='⚠️ Offline / Supabase belum siap';cs.style.color='#e53935'}}
+ finally{cloudSyncing=false}
+}
+async function persistCurrentNote(){
+ if(!cloudReady)return;
+ const n=notePayload();if(!n.no||!n.date||!n.customer||n.total<=0)return;
+ try{let a=getHistory(),i=a.findIndex(x=>String(x.no)===n.no);if(i>=0)a[i]=n;else a.unshift(n);localStorage.setItem(KEY,JSON.stringify(a.slice(0,100)));await cloudUpsert(n);renderHistory()}catch(e){console.warn('Supabase autosave:',e)}
+}
+const KEY='barokah_telur_nota_v11',OLD_KEY='barokah_telur_nota_v10';let items=[{name:'',qty:1,unit:'Ikat',price:0}],payments=[];
+const rupiah=n=>'Rp '+new Intl.NumberFormat('id-ID').format(Number(n)||0),money=v=>Number(String(v||'').replace(/[^0-9]/g,''))||0,fmt=v=>v?new Intl.NumberFormat('id-ID').format(v):'',esc=v=>{let d=document.createElement('div');d.textContent=v??'';return d.innerHTML},today=()=>{const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};
+function niceDate(v){if(!v)return'-';return new Date(v+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function niceLong(v){if(!v)return'-';return new Date(v+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}
+function total(){return items.reduce((s,x)=>s+(+x.qty||0)*(+x.price||0),0)}function paid(){return payments.reduce((s,x)=>s+(+x.amount||0),0)}function due(){return Math.max(0,total()-paid())}function status(){return total()>0&&due()===0}
+function renderItems(){document.getElementById('items').innerHTML='<div class="table-wrap"><div class="item-grid" style="background:#f8f9fa;padding:9px;font-size:10px;font-weight:900"><span>Barang</span><span>Qty</span><span>Satuan</span><span>Harga</span><span>Total</span><span>Aksi</span></div>'+items.map((x,i)=>'<div class="item-grid" style="padding:7px;border-top:1px solid #eceef1"><input value="'+esc(x.name)+'" oninput="items['+i+'].name=this.value;update()"><input type="number" min="0" value="'+x.qty+'" oninput="items['+i+'].qty=Number(this.value)||0;update()"><input list="satuan-opts" value="'+esc(x.unit)+'" oninput="items['+i+'].unit=this.value;update()" placeholder="Satuan"><datalist id="satuan-opts"><option value="Ikat"><option value="Lembar"><option value="Butir"><option value="Papan"><option value="Kg"><option value="Pcs"><option value="Ball"><option value="Lusin"><option value="Karton"><option value="Dus"></datalist><input inputmode="numeric" value="'+fmt(x.price)+'" oninput="items['+i+'].price=money(this.value);this.value=fmt(items['+i+'].price);update()"><span style="font-size:11px">'+rupiah((x.qty||0)*(x.price||0))+'</span><button class="icon-btn" onclick="removeItem('+i+')">🗑</button></div>').join('')+'</div>'}
+function renderPayments(){const el=document.getElementById('payments');if(!el)return;if(!payments.length)payments.push({type:'DP',description:'',amount:0,date:today()});let cicNo=0;el.innerHTML='<div class="pay-head"><span>No</span><span>Jenis</span><span>Keterangan</span><span>Nominal</span><span>Tanggal</span><span>Aksi</span></div>'+payments.map((p,i)=>{const type=p.type||'DP';const isCic=type==='CICILAN';if(isCic)cicNo++;const autoDesc=isCic?'Cicilan '+cicNo:(type==='DP'?'DP':'Pembayaran');const shownDesc=(isCic && (!p.description || /^Cicilan \d+$/.test(p.description)))?autoDesc:(p.description||autoDesc);if(isCic && (!p.description || /^Cicilan \d+$/.test(p.description)))p.description=autoDesc;return '<div class="pay-row"><b>'+(i+1)+'</b><select onchange="changePaymentType('+i+',this.value)"><option value="DP" '+(type==='DP'?'selected':'')+'>DP</option><option value="PEMBAYARAN" '+(type==='PEMBAYARAN'?'selected':'')+'>Pembayaran</option><option value="CICILAN" '+(isCic?'selected':'')+'>Cicilan</option></select><input class="desc" value="'+esc(shownDesc)+'" placeholder="'+(isCic?autoDesc:'Keterangan')+'" oninput="payments['+i+'].description=this.value;update()"><input inputmode="numeric" value="'+fmt(p.amount)+'" placeholder="Nominal" oninput="payments['+i+'].amount=money(this.value);this.value=fmt(payments['+i+'].amount);update()"><input class="date" type="date" value="'+(p.date||today())+'" onchange="payments['+i+'].date=this.value;update()"><button class="icon-btn" onclick="removePayment('+i+')">🗑</button></div>'}).join('')+'<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn btn-gold" onclick="addPayment()">＋ Tambah Pembayaran</button></div>'}
+function renderPreview(){pNo.textContent=noNota.value;pDate.textContent=niceLong(tanggal.value);pCustomer.textContent=pelanggan.value||'-';pItems.innerHTML=items.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+x.qty+'</td><td>'+esc(x.unit)+'</td><td>'+rupiah(x.price)+'</td><td>'+rupiah((x.qty||0)*(x.price||0))+'</td></tr>').join('');pTotal.textContent=rupiah(total());pPaid.textContent=rupiah(paid());pDue.textContent=rupiah(due());pStatus.textContent=status()?'LUNAS':'BELUM LUNAS';pStatus.className='badge '+(status()?'badge-paid':'badge-unpaid');pPayments.innerHTML=payments.filter(p=>p.amount||p.description).map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(p.type||'DP')+'</td><td>'+esc(p.description||'Pembayaran')+'</td><td>'+rupiah(p.amount)+'</td><td>'+niceDate(p.date||today())+'</td></tr>').join('')||'<tr><td colspan="5" style="text-align:center;color:#999">Belum ada pembayaran</td></tr>'}
+function update(rebuild=false){sumTotal.textContent=rupiah(total());sumPaid.textContent=rupiah(paid());sumDue.textContent=rupiah(due());sumStatus.textContent=status()?'LUNAS':'BELUM LUNAS';sumStatus.className='badge '+(status()?'badge-paid':'badge-unpaid');if(rebuild){renderItems();renderPayments()}renderPreview()
+try{autoSaveHistory()}catch(e){}
+}
+function addItem(){items.push({name:'',qty:1,unit:'Ikat',price:0});update(true)}function removeItem(i){items.splice(i,1);if(!items.length)items.push({name:'',qty:1,unit:'Ikat',price:0});update(true)}function changePaymentType(i,type){payments[i].type=type;if(type==='CICILAN'){const count=payments.filter((p,idx)=>idx<=i&&p.type==='CICILAN').length;payments[i].description='Cicilan '+count}else if(!payments[i].description||/^Cicilan \d+$/.test(payments[i].description)){payments[i].description=type==='DP'?'DP':'Pembayaran'}update(true)}function addPayment(){payments.push({type:'CICILAN',description:'',amount:0,date:today()});update(true)}function removePayment(i){payments.splice(i,1);update(true)}
+function getHistory(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+async function saveNota(){
+ const n=notePayload();
+ if(!n.no){alert('Nomor nota belum diisi.');return}
+ if(!n.date){alert('Tanggal nota belum diisi.');return}
+ if(!n.customer){alert('Isi nama pelanggan terlebih dahulu.');return}
+ if(n.total<=0){alert('Tambahkan barang dan harga terlebih dahulu.');return}
+ if(n.paid>n.total&&!confirm('Total pembayaran melebihi total nota. Tetap simpan?'))return;
+ let a=getHistory(),i=a.findIndex(x=>String(x.no)===n.no);
+ if(i>=0)a[i]=n;else a.unshift(n);
+ localStorage.setItem(KEY,JSON.stringify(a.slice(0,100)));
+ renderHistory();
+ try{
+  await cloudUpsert(n);
+  cloudReady=true;
+  const cs=document.getElementById('cloudStatus');
+  if(cs){cs.textContent='☁️ Tersinkron ke Supabase';cs.style.color='#1f9d55'}
+  alert(i>=0?'Nota diperbarui dan tersinkron ke Supabase.':'Nota disimpan dan tersinkron ke Supabase.');
+ }catch(e){
+  cloudReady=false;
+  const cs=document.getElementById('cloudStatus');
+  if(cs){cs.textContent='⚠️ Gagal sinkron';cs.style.color='#e53935'}
+  alert('Nota tersimpan di perangkat, tetapi gagal ke Supabase.\n\n'+e.message);
+  console.error('Supabase save error:',e);
+ }
+}
+function renderHistory(){let q=(search.value||'').toLowerCase(),a=getHistory().filter(n=>(n.no+' '+n.customer).toLowerCase().includes(q)).sort((x,y)=>{const nx=parseInt(String(x.no).replace(/\D/g,'')||0),ny=parseInt(String(y.no).replace(/\D/g,'')||0);return ny-nx;});historyRows.innerHTML=a.length?a.map(n=>'<tr><td>'+esc(n.no)+'</td><td>'+niceDate(n.date)+'</td><td>'+esc(n.customer)+'</td><td>'+rupiah(n.total)+'</td><td style="color:#1f9d55">'+rupiah(n.paid)+'</td><td style="color:#e53935">'+rupiah(n.due)+'</td><td><span class="badge '+(n.due===0?'badge-paid':'badge-unpaid')+'">'+(n.due===0?'LUNAS':'BELUM LUNAS')+'</span></td><td><button class="btn btn-light" style="padding:6px 8px" onclick="loadNota(\''+n.no+'\')">◉</button> <button class="btn btn-light" style="padding:6px 8px" onclick="printSaved(\''+n.no+'\')">▣</button> <button class="btn btn-light" style="padding:6px 8px;color:#e53935" onclick="deleteNota(\''+n.no+'\')">🗑</button></td></tr>').join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#999">Belum ada riwayat nota.</td></tr>'}
+function loadNota(no){let n=getHistory().find(x=>x.no===no);if(!n)return;noNota.value=n.no;tanggal.value=n.date;pelanggan.value=n.customer;items=JSON.parse(JSON.stringify(n.items||[]));payments=JSON.parse(JSON.stringify(n.payments||[]));const legacy=Array.isArray(n.installments)?n.installments:[];if(legacy.length){payments=payments.concat(legacy.filter(x=>x.amount||x.description).map(x=>({type:'CICILAN',description:x.description||'Cicilan',amount:Number(x.amount)||0,date:x.date||today()})));}installments=[];update(true);scrollTo({top:0,behavior:'smooth'})}
+function printSaved(no){loadNota(no);setTimeout(printNota,150)}
+async function deleteNota(no){if(!confirm('Hapus nota ini?'))return;localStorage.setItem(KEY,JSON.stringify(getHistory().filter(x=>String(x.no)!==String(no))));renderHistory();try{if(cloudReady)await cloudDelete(no)}catch(e){console.warn('Supabase delete:',e);alert('Nota terhapus di perangkat, tetapi gagal dihapus dari server.')}}
+async function clearHistory(){if(!confirm('Hapus semua riwayat nota?'))return;localStorage.removeItem(KEY);renderHistory();try{if(cloudReady)await cloudClear()}catch(e){console.warn('Supabase clear:',e);alert('Riwayat di perangkat sudah 0, tetapi gagal menghapus seluruh data server.')}}
+function nextNo(){let a=getHistory(),nums=a.map(x=>parseInt(String(x.no).replace(/\D/g,''))||0);return'NT-'+String(Math.max(0,...nums)+1).padStart(5,'0')}
+function newNota(){noNota.value=nextNo();tanggal.value=today();pelanggan.value='';items=[{name:'',qty:1,unit:'Ikat',price:0}];payments=[];update(true);scrollTo({top:0,behavior:'smooth'})}function printNota(){if(total()<=0){alert('Tambahkan barang dan harga sebelum mencetak nota.');return}window.print()}
+noNota.value=nextNo();tanggal.value=today();pelanggan.value='';update(true);renderHistory();
+syncFromCloud();
+</script>
+<script data-v17-autosave-listener>
+document.addEventListener('input',function(e){
+ if(e.target.closest('#notaForm,#items,#payments')){try{autoSaveHistory()}catch(_e){}}
+});
+document.addEventListener('change',function(e){
+ if(e.target.closest('#notaForm,#items,#payments')){try{autoSaveHistory()}catch(_e){}}
+});
+</script>
+</body></html>
