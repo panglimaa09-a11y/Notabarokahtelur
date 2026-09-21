@@ -67,9 +67,39 @@
   .paper-logo{width:112px;height:112px}
 }
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#080a0d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="assets/logo-barokah-telur.png">
+<style id="mobile-pwa-fix">
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.content{min-width:0;overflow:visible}
+.table-wrap{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.history-table{min-width:760px}
+.history-card{overflow:visible}
+.install-btn{display:none}
+@media(max-width:720px){
+  .topbar{width:100%;min-width:0;display:flex;align-items:center;gap:8px}
+  .brand{flex:1;min-width:0}
+  .brand>div{min-width:0}
+  .brand-title,.brand-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-actions{margin-left:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+  .top-actions .btn{padding:8px 9px;font-size:10px;white-space:nowrap}
+  .content{width:100%;max-width:100%;overflow:visible}
+  .history-head{align-items:stretch;flex-direction:column}
+  .history-tools{width:100%;display:grid;grid-template-columns:1fr auto;gap:7px}
+  .history-tools input{width:100%}
+  .history-tools .btn{white-space:nowrap}
+  .history-scroll-hint{display:block!important}
+  .table-wrap{border-radius:8px}
+}
+@media(min-width:721px){.history-scroll-hint{display:none!important}}
+</style>
 </head>
 <body>
-<header class="topbar"><div class="brand"><img class="brand-logo" src="assets/logo-barokah-telur.png"><div><div class="brand-title">BAROKAH TELUR</div><div class="brand-sub">Sistem Nota Penjualan</div></div></div><div class="top-actions"><button class="btn btn-dark" onclick="document.getElementById('history').scrollIntoView()">▣ &nbsp;Riwayat Nota</button><button class="btn btn-gold" onclick="newNota()">⊕ &nbsp;Buat Nota Baru</button></div></header>
+<header class="topbar"><div class="brand"><img class="brand-logo" src="assets/logo-barokah-telur.png"><div><div class="brand-title">BAROKAH TELUR</div><div class="brand-sub">Sistem Nota Penjualan</div></div></div><div class="top-actions"><button id="installBtn" class="btn btn-gold install-btn" type="button" onclick="installPWA()">⬇ &nbsp;Pasang App</button><button class="btn btn-dark" onclick="document.getElementById('history').scrollIntoView()">▣ &nbsp;Riwayat Nota</button><button class="btn btn-gold" onclick="newNota()">⊕ &nbsp;Buat Nota Baru</button></div></header>
 <div class="layout"><aside class="sidebar"><img class="side-logo" src="assets/logo-barokah-telur.png"><nav class="nav"><button onclick="alert('Dashboard pada versi nota ini digunakan sebagai navigasi.')"><span>⌂</span>Dashboard</button><button class="active"><span>▣</span>Buat Nota</button><button onclick="document.getElementById('history').scrollIntoView()"><span>▤</span>Riwayat Nota</button></nav><div style="margin-top:auto"><button class="nav" style="width:100%" onclick="alert('Pengaturan siap dikembangkan.')"><span>⚙</span>Pengaturan</button></div></aside>
 <main class="content"><div class="main-grid"><div>
 <section class="card"><div class="card-title"><span class="ico">♧</span> DATA PENJUALAN</div><div class="fields"><div class="field"><label>No. Nota</label><input id="noNota" readonly style="background:#f0f4f8;cursor:default;color:#555;border-color:#ddd;font-weight:700;"></div><div class="field"><label>Tanggal</label><input id="tanggal" type="date"></div><div class="field full"><label>Pelanggan</label><input id="pelanggan" placeholder="Nama pelanggan"></div></div></section>
@@ -78,7 +108,7 @@
 </div>
 <div class="preview-card"><div class="preview-head"><div class="preview-title">PREVIEW NOTA</div><button class="btn btn-dark" onclick="printNota()">▣ &nbsp;Print Nota</button></div>
 <section class="paper print-target" id="paper"><img class="paper-logo" src="assets/logo-barokah-telur.png"><div class="paper-top"><h1>NOTA</h1><div class="paper-meta"><b id="pNo"></b><br><span id="pDate"></span></div></div><div class="paper-customer">Pelanggan<strong id="pCustomer">-</strong></div><table class="paper-table"><thead><tr><th>No</th><th>Barang</th><th>Qty</th><th>Satuan</th><th>Harga</th><th>Total</th></tr></thead><tbody id="pItems"></tbody></table><div class="paper-totals"><div><span>TOTAL</span><strong id="pTotal"></strong></div><div class="paid"><span>TOTAL DIBAYAR</span><strong id="pPaid"></strong></div><div class="due"><span>SISA TAGIHAN</span><strong id="pDue"></strong></div></div><div class="paper-status"><span id="pStatus" class="badge badge-unpaid">BELUM LUNAS</span></div><div class="paper-divider"></div><div class="paper-pay-title">RINCIAN PEMBAYARAN</div><table class="paper-table"><thead><tr><th>No</th><th>Jenis</th><th>Keterangan</th><th>Nominal</th><th>Tanggal</th></tr></thead><tbody id="pPayments"></tbody></table><div class="paper-divider"></div><div class="paper-foot">— &nbsp; Terima kasih atas kepercayaan Anda &nbsp; —<small>Barang yang sudah dibeli tidak dapat dikembalikan.</small></div></section></div></div>
-<section class="card history-card" id="history"><div class="history-head"><div class="card-title" style="margin:0"><span class="ico">▤</span> RIWAYAT NOTA</div><div class="history-tools"><input id="search" placeholder="Cari pelanggan / no. nota..." oninput="renderHistory()"><button class="btn btn-red" onclick="clearHistory()">♜ &nbsp;Hapus Semua</button></div></div><div class="table-wrap" style="margin-top:12px"><table class="history-table"><thead><tr><th>No. Nota</th><th>Tanggal</th><th>Pelanggan</th><th>Total</th><th>Total Dibayar</th><th>Sisa</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="historyRows"></tbody></table></div></section>
+<section class="card history-card" id="history"><div class="history-head"><div class="card-title" style="margin:0"><span class="ico">▤</span> RIWAYAT NOTA</div><div class="history-tools"><input id="search" placeholder="Cari pelanggan / no. nota..." oninput="renderHistory()"><button class="btn btn-red" onclick="clearHistory()">♜ &nbsp;Hapus Semua</button></div></div><div class="history-scroll-hint" style="display:none;font-size:10px;color:#707782;margin:8px 2px 0">↔ Geser tabel ke kiri/kanan untuk melihat kolom lainnya</div><div class="table-wrap" style="margin-top:12px"><table class="history-table"><thead><tr><th>No. Nota</th><th>Tanggal</th><th>Pelanggan</th><th>Total</th><th>Total Dibayar</th><th>Sisa</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="historyRows"></tbody></table></div></section>
 <div id="cloudStatus" style="position:fixed;right:14px;bottom:14px;z-index:50;background:#fff;border:1px solid #ddd;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;box-shadow:0 4px 18px #0001">☁️ Sinkronisasi...</div><footer class="footer"><b>BAROKAH TELUR</b><span>Sistem Nota Penjualan</span><span>© 2026 Barokah Telur. All rights reserved.</span></footer></main></div>
 <script>
 const SUPABASE_URL='https://skaoxvzbuzxkxmrwvilf.supabase.co';
@@ -183,5 +213,33 @@ document.addEventListener('input',function(e){
 document.addEventListener('change',function(e){
  if(e.target.closest('#notaForm,#items,#payments')){try{autoSaveHistory()}catch(_e){}}
 });
+</script>
+<script>
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const b=document.getElementById('installBtn');
+  if(b)b.style.display='inline-flex';
+});
+window.addEventListener('appinstalled',()=>{
+  deferredInstallPrompt=null;
+  const b=document.getElementById('installBtn');
+  if(b)b.style.display='none';
+});
+async function installPWA(){
+  if(!deferredInstallPrompt){
+    alert('Jika tombol instalasi belum muncul, buka menu browser lalu pilih "Tambahkan ke layar utama".');
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  const b=document.getElementById('installBtn');
+  if(b)b.style.display='none';
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('PWA service worker:',err)));
+}
 </script>
 </body></html>
