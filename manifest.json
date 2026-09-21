@@ -1,0 +1,21 @@
+{
+  "name": "Barokah Telur - Sistem Nota Penjualan",
+  "short_name": "Barokah Telur",
+  "description": "Sistem nota penjualan Barokah Telur",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f6f8",
+  "theme_color": "#080a0d",
+  "icons": [
+    {
+      "src": "assets/logo-barokah-telur.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
