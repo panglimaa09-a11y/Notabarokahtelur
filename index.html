@@ -301,7 +301,17 @@ async function installPWA(){
   if(b)b.style.display='none';
 }
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('PWA service worker:',err)));
+  let reloadedForPWA=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(reloadedForPWA)return;
+    reloadedForPWA=true;
+    window.location.reload();
+  });
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js?v=3',{updateViaCache:'none'})
+      .then(reg=>reg.update())
+      .catch(err=>console.warn('PWA service worker:',err));
+  });
 }
 </script>
 </body></html>
