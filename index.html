@@ -24,7 +24,22 @@
 @media(max-width:1050px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main-grid{grid-template-columns:1fr}.preview-card{position:static}}
 @media(max-width:720px){.topbar{height:auto;padding:10px 12px;flex-wrap:wrap}.brand-logo{width:52px;height:52px}.brand-title{font-size:16px}.top-actions .btn{padding:9px;font-size:11px}.content{padding:12px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.item-grid{grid-template-columns:1fr 1fr}.pay-row{grid-template-columns:24px 1fr 1fr 34px}.pay-row .date{display:none}.feature-strip{grid-template-columns:1fr 1fr}.paper{padding:14px}.paper-logo{width:115px;height:115px}.paper-totals{width:100%}.paper-totals div strong{min-width:125px}.history-tools{flex-direction:column}.history-tools input{width:100%}}
 @media print{@page{size:A4;margin:10mm}body *{visibility:hidden!important}.print-target,.print-target *{visibility:visible!important}.topbar,.sidebar,.content>.main-grid>div:first-child,.history-card,.footer,.preview-head{display:none!important}.layout{display:block;min-height:0}.content{padding:0}.main-grid{display:block}.preview-card{display:block;position:static}.print-target{display:block!important;border:0!important;box-shadow:none!important;border-radius:0!important;width:100%!important;min-height:0!important}}
-.pay-head,.pay-row{display:grid;align-items:center;gap:7px}.pay-head,.pay-row{grid-template-columns:30px 105px minmax(150px,1fr) 125px 115px 34px}.pay-head{background:#f8f9fa;padding:9px;font-size:10px;font-weight:900}.pay-row{padding:7px 0;border-top:1px solid #eceef1}.pay-row input,.pay-row select{height:34px;border:1px solid #dfe2e7;border-radius:7px;padding:0 8px;font-size:11px;width:100%;box-sizing:border-box}@media(max-width:720px){.pay-head{display:none}.pay-row{grid-template-columns:24px 1fr 1fr 34px}.pay-row .date{display:none}.pay-row select{grid-column:2}.pay-row input.desc{grid-column:3}}</style>
+.pay-head,.pay-row{display:grid;align-items:center;gap:7px}.pay-head,.pay-row{grid-template-columns:30px 105px minmax(150px,1fr) 125px 115px 34px}.pay-head{background:#f8f9fa;padding:9px;font-size:10px;font-weight:900}.pay-row{padding:7px 0;border-top:1px solid #eceef1}.pay-row input,.pay-row select{height:34px;border:1px solid #dfe2e7;border-radius:7px;padding:0 8px;font-size:11px;width:100%;box-sizing:border-box}@media(max-width:720px){
+  .pay-head{display:none}
+  .pay-row{
+    grid-template-columns:24px minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas:"no type desc" ". amount action";
+    min-width:0;
+    width:100%;
+    overflow:hidden;
+  }
+  .pay-row>b{grid-area:no}
+  .pay-row select{grid-area:type;min-width:0;width:100%}
+  .pay-row input.desc{grid-area:desc;min-width:0;width:100%}
+  .pay-row input:not(.desc):not(.date){grid-area:amount;min-width:0;width:100%}
+  .pay-row .date{display:none}
+  .pay-row .icon-btn{grid-area:action;justify-self:end}
+}</style>
 <style id="owner-reference-ui-refinement">
 /* OWNER REFERENCE UI — refine existing application without replacing features */
 .topbar{height:88px;padding:0 18px}
@@ -73,6 +88,37 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="assets/logo-barokah-telur.png">
+<style id="mobile-layout-sync-fix">
+/* Mobile layout hardening: prevent intrinsic table/grid widths from expanding the page. */
+html,body{overflow-x:hidden!important}
+.content,.main-grid,.card,.preview-card,.paper{min-width:0!important;max-width:100%!important}
+.paper{width:100%;overflow:hidden}
+.paper-table{width:100%!important;table-layout:fixed!important}
+.paper-table th,.paper-table td{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+#paper .paper-table:nth-of-type(1) th:nth-child(1),#paper .paper-table:nth-of-type(1) td:nth-child(1){width:7%}
+#paper .paper-table:nth-of-type(1) th:nth-child(2),#paper .paper-table:nth-of-type(1) td:nth-child(2){width:28%}
+#paper .paper-table:nth-of-type(1) th:nth-child(3),#paper .paper-table:nth-of-type(1) td:nth-child(3){width:10%}
+#paper .paper-table:nth-of-type(1) th:nth-child(4),#paper .paper-table:nth-of-type(1) td:nth-child(4){width:15%}
+#paper .paper-table:nth-of-type(1) th:nth-child(5),#paper .paper-table:nth-of-type(1) td:nth-child(5){width:20%}
+#paper .paper-table:nth-of-type(1) th:nth-child(6),#paper .paper-table:nth-of-type(1) td:nth-child(6){width:20%}
+#paper .paper-table:nth-of-type(2) th:nth-child(1),#paper .paper-table:nth-of-type(2) td:nth-child(1){width:8%}
+#paper .paper-table:nth-of-type(2) th:nth-child(2),#paper .paper-table:nth-of-type(2) td:nth-child(2){width:18%}
+#paper .paper-table:nth-of-type(2) th:nth-child(3),#paper .paper-table:nth-of-type(2) td:nth-child(3){width:39%}
+#paper .paper-table:nth-of-type(2) th:nth-child(4),#paper .paper-table:nth-of-type(2) td:nth-child(4){width:20%}
+#paper .paper-table:nth-of-type(2) th:nth-child(5),#paper .paper-table:nth-of-type(2) td:nth-child(5){width:15%}
+.pay-row,.item-grid{min-width:0}
+.pay-row>*,.item-grid>*{min-width:0;max-width:100%}
+@media(max-width:720px){
+  .paper-top{gap:8px;min-width:0}
+  .paper-top h1{flex:1;min-width:0}
+  .paper-meta{max-width:45%;overflow-wrap:anywhere}
+  .paper-table th,.paper-table td{font-size:9px;padding:6px 5px;white-space:normal}
+  .paper-totals div strong{min-width:0;max-width:58%;overflow-wrap:anywhere}
+  .paper-customer{min-width:0}
+  .history-table{min-width:760px}
+  .table-wrap{max-width:100%;overflow-x:auto}
+}
+</style>
 <style id="mobile-pwa-fix">
 html,body{width:100%;max-width:100%;overflow-x:hidden}
 .content{min-width:0;overflow:visible}
@@ -170,6 +216,22 @@ function update(rebuild=false){sumTotal.textContent=rupiah(total());sumPaid.text
 try{autoSaveHistory()}catch(e){}
 }
 function addItem(){items.push({name:'',qty:1,unit:'Ikat',price:0});update(true)}function removeItem(i){items.splice(i,1);if(!items.length)items.push({name:'',qty:1,unit:'Ikat',price:0});update(true)}function changePaymentType(i,type){payments[i].type=type;if(type==='CICILAN'){const count=payments.filter((p,idx)=>idx<=i&&p.type==='CICILAN').length;payments[i].description='Cicilan '+count}else if(!payments[i].description||/^Cicilan \d+$/.test(payments[i].description)){payments[i].description=type==='DP'?'DP':'Pembayaran'}update(true)}function addPayment(){payments.push({type:'CICILAN',description:'',amount:0,date:today()});update(true)}function removePayment(i){payments.splice(i,1);update(true)}
+let autoSaveTimer=null;
+function autoSaveHistory(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(async()=>{
+    const n=notePayload();
+    if(!n.no||!n.date||!n.customer||n.total<=0)return;
+    try{
+      const a=getHistory();
+      const i=a.findIndex(x=>String(x.no)===String(n.no));
+      if(i>=0)a[i]=n;else a.unshift(n);
+      localStorage.setItem(KEY,JSON.stringify(a.slice(0,100)));
+      renderHistory();
+      if(cloudReady) await cloudUpsert(n);
+    }catch(e){console.warn('Autosave:',e)}
+  },700);
+}
 function getHistory(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
 async function saveNota(){
  const n=notePayload();
@@ -197,7 +259,7 @@ async function saveNota(){
  }
 }
 function renderHistory(){let q=(search.value||'').toLowerCase(),a=getHistory().filter(n=>(n.no+' '+n.customer).toLowerCase().includes(q)).sort((x,y)=>{const nx=parseInt(String(x.no).replace(/\D/g,'')||0),ny=parseInt(String(y.no).replace(/\D/g,'')||0);return ny-nx;});historyRows.innerHTML=a.length?a.map(n=>'<tr><td>'+esc(n.no)+'</td><td>'+niceDate(n.date)+'</td><td>'+esc(n.customer)+'</td><td>'+rupiah(n.total)+'</td><td style="color:#1f9d55">'+rupiah(n.paid)+'</td><td style="color:#e53935">'+rupiah(n.due)+'</td><td><span class="badge '+(n.due===0?'badge-paid':'badge-unpaid')+'">'+(n.due===0?'LUNAS':'BELUM LUNAS')+'</span></td><td><button class="btn btn-light" style="padding:6px 8px" onclick="loadNota(\''+n.no+'\')">◉</button> <button class="btn btn-light" style="padding:6px 8px" onclick="printSaved(\''+n.no+'\')">▣</button> <button class="btn btn-light" style="padding:6px 8px;color:#e53935" onclick="deleteNota(\''+n.no+'\')">🗑</button></td></tr>').join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#999">Belum ada riwayat nota.</td></tr>'}
-function loadNota(no){let n=getHistory().find(x=>x.no===no);if(!n)return;noNota.value=n.no;tanggal.value=n.date;pelanggan.value=n.customer;items=JSON.parse(JSON.stringify(n.items||[]));payments=JSON.parse(JSON.stringify(n.payments||[]));const legacy=Array.isArray(n.installments)?n.installments:[];if(legacy.length){payments=payments.concat(legacy.filter(x=>x.amount||x.description).map(x=>({type:'CICILAN',description:x.description||'Cicilan',amount:Number(x.amount)||0,date:x.date||today()})));}installments=[];update(true);scrollTo({top:0,behavior:'smooth'})}
+function loadNota(no){let n=getHistory().find(x=>x.no===no);if(!n)return;noNota.value=n.no;tanggal.value=n.date;pelanggan.value=n.customer;items=JSON.parse(JSON.stringify(n.items||[]));payments=JSON.parse(JSON.stringify(n.payments||[]));const legacy=Array.isArray(n.installments)?n.installments:[];if(legacy.length){payments=payments.concat(legacy.filter(x=>x.amount||x.description).map(x=>({type:'CICILAN',description:x.description||'Cicilan',amount:Number(x.amount)||0,date:x.date||today()})));}update(true);scrollTo({top:0,behavior:'smooth'})}
 function printSaved(no){loadNota(no);setTimeout(printNota,150)}
 async function deleteNota(no){if(!confirm('Hapus nota ini?'))return;localStorage.setItem(KEY,JSON.stringify(getHistory().filter(x=>String(x.no)!==String(no))));renderHistory();try{if(cloudReady)await cloudDelete(no)}catch(e){console.warn('Supabase delete:',e);alert('Nota terhapus di perangkat, tetapi gagal dihapus dari server.')}}
 async function clearHistory(){if(!confirm('Hapus semua riwayat nota?'))return;localStorage.removeItem(KEY);renderHistory();try{if(cloudReady)await cloudClear()}catch(e){console.warn('Supabase clear:',e);alert('Riwayat di perangkat sudah 0, tetapi gagal menghapus seluruh data server.')}}
