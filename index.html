@@ -143,7 +143,67 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 }
 @media(min-width:721px){.history-scroll-hint{display:none!important}}
 </style>
-</head>
+
+<style id="mobile-overflow-final-fix">
+/* FINAL MOBILE WIDTH FIX */
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden}
+body{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+.layout,.content,.main-grid,.main-grid>div,.card,.preview-card,.history-card{width:100%;max-width:100%;min-width:0}
+.main-grid{overflow:visible}
+.card{overflow:hidden}
+.save-btn{display:flex;width:100%;max-width:100%;min-width:0;white-space:normal;text-align:center}
+#payments{width:100%;max-width:100%;min-width:0;overflow:hidden}
+#payments>div:last-child{width:100%;max-width:100%;display:flex;justify-content:flex-end;min-width:0}
+#payments>div:last-child .btn{max-width:100%;white-space:normal}
+.pay-row{width:100%;max-width:100%;min-width:0}
+.pay-row>*{min-width:0!important;max-width:100%}
+.item-grid{width:100%;max-width:100%;min-width:0}
+.item-grid>*{min-width:0!important;max-width:100%}
+.paper{width:100%;max-width:100%;min-width:0;overflow:hidden}
+.paper-top{width:100%;min-width:0}
+.paper-table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
+.paper-table th,.paper-table td{min-width:0!important;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.paper-totals{max-width:100%;min-width:0}
+.paper-totals div{min-width:0;max-width:100%}
+.paper-totals div span,.paper-totals div strong{min-width:0;max-width:58%;overflow-wrap:anywhere;white-space:normal}
+@media(max-width:720px){
+  .content{padding:10px 8px 0}
+  .main-grid{display:block;width:100%}
+  .main-grid>div{width:100%;max-width:100%}
+  .card{padding:12px;width:100%}
+  .card-title{font-size:14px}
+  #payments{padding:0}
+  .pay-row{
+    grid-template-columns:24px minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas:"no type desc" ". amount action";
+    column-gap:7px;
+    row-gap:7px;
+    padding:7px 0;
+  }
+  .pay-row>b{grid-area:no}
+  .pay-row select{grid-area:type}
+  .pay-row input.desc{grid-area:desc}
+  .pay-row input:not(.desc):not(.date){grid-area:amount}
+  .pay-row .icon-btn{grid-area:action;justify-self:end}
+  #payments>div:last-child{justify-content:stretch}
+  #payments>div:last-child .btn{width:100%;max-width:100%;font-size:12px;padding:10px 8px}
+  .save-btn{font-size:14px;padding:12px 8px}
+  .feature-strip{width:100%;grid-template-columns:1fr 1fr}
+  .preview-card{width:100%;max-width:100%;overflow:hidden}
+  .preview-head{width:100%;min-width:0}
+  .preview-head .btn{flex:0 0 auto;padding:9px 10px;font-size:10px}
+  .paper{padding:12px;width:100%;max-width:100%}
+  .paper-logo{width:105px;height:105px}
+  .paper-top{align-items:flex-start}
+  .paper h1{font-size:25px}
+  .paper-meta{max-width:45%;font-size:9px;overflow-wrap:anywhere}
+  .paper-table th,.paper-table td{font-size:8px;padding:5px 3px}
+  .paper-totals div{font-size:10px}
+  .paper-totals div strong{font-size:10px}
+  .history-card{width:100%;max-width:100%}
+}
+</style></head>
 <body>
 <header class="topbar"><div class="brand"><img class="brand-logo" src="assets/logo-barokah-telur.png"><div><div class="brand-title">BAROKAH TELUR</div><div class="brand-sub">Sistem Nota Penjualan</div></div></div><div class="top-actions"><button id="installBtn" class="btn btn-gold install-btn" type="button" onclick="installPWA()">⬇ &nbsp;Pasang App</button><button class="btn btn-dark" onclick="document.getElementById('history').scrollIntoView()">▣ &nbsp;Riwayat Nota</button><button class="btn btn-gold" onclick="newNota()">⊕ &nbsp;Buat Nota Baru</button></div></header>
 <div class="layout"><aside class="sidebar"><img class="side-logo" src="assets/logo-barokah-telur.png"><nav class="nav"><button onclick="alert('Dashboard pada versi nota ini digunakan sebagai navigasi.')"><span>⌂</span>Dashboard</button><button class="active"><span>▣</span>Buat Nota</button><button onclick="document.getElementById('history').scrollIntoView()"><span>▤</span>Riwayat Nota</button></nav><div style="margin-top:auto"><button class="nav" style="width:100%" onclick="alert('Pengaturan siap dikembangkan.')"><span>⚙</span>Pengaturan</button></div></aside>
